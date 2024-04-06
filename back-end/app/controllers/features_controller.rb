@@ -1,6 +1,11 @@
 class FeaturesController < ApplicationController
     def index
+
         @features = Feature.all
+
+        # @features.count == 0 && Rake::Task['obtain_seismological_data:get_data'].invoke
+
+        # @features = Feature.all
         
         mag_type = params[:mag_type]
         page = params[:page]
@@ -63,13 +68,14 @@ class FeaturesController < ApplicationController
         end
 
         response = {
-            data : @features,
+            data: @features,
             pagination: {
                 current_page: page,
                 total: @features.count,
                 per_page: per_page
             }
         }
+
         render json: response
       end
     
@@ -83,6 +89,10 @@ class FeaturesController < ApplicationController
     end
     
     def create
+        #i need to format the time
+
+        # params[:time] = Time.at(params[:time].to_i / 1000).strftime("%Y-%m-%d %H:%M:%S")
+
         @feature = Feature.new(feature_params)
         # if @feature.save
         # redirect_to @feature
