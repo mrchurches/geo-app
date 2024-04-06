@@ -1,6 +1,6 @@
 const Card = ({ attributes, links }) => {
     return (
-        <article className="w-[30rem]">
+        <article className="w-[33rem] rounded-xl hover:bg-slate-800 p-3">
             <h3 className="text-2xl font-bold">{attributes.title}</h3>
             <p className="text-lg flex items-center gap-x-2">
                 <svg width="15" height="15" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">

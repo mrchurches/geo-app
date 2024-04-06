@@ -12,7 +12,8 @@ class FeaturesController < ApplicationController
         per_page = params[:per_page]
 
         if mag_type || page || per_page
-          @features = apply_filters(@features, mag_type, page, per_page)
+          @total_pages = 0
+          @features = apply_filters(@features, mag_type, page, per_page, @total_pages)
         end
         #i need to format the response in this way 
         #         {
@@ -71,7 +72,7 @@ class FeaturesController < ApplicationController
             data: @features,
             pagination: {
                 current_page: page,
-                total: @features.count,
+                total: @total_pages,
                 per_page: per_page
             }
         }
@@ -125,12 +126,12 @@ class FeaturesController < ApplicationController
         params.require(:feature).permit(:name, :description, :filters)
         end
 
-        def apply_filters(features, mag_type, page, per_page)
+        def apply_filters(features, mag_type, page, per_page, total_pages)
             # Filtrar por tipo de magnitud (mag_type)
             if mag_type
               features = features.where(mag_type: mag_type)
             end
-        
+            @total_pages = features.count / per_page.to_i
             # Paginar resultados
             if page && per_page
               per_page = per_page.to_i
