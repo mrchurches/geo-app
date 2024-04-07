@@ -6,18 +6,31 @@ import Card from "./components/Card";
 import NoData from "./components/NoData";
 import Geo from "./components/Geo";
 import Arrow from "./components/Arrow";
+import DoubleArrow from "./components/DoubleArrow";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [features, setFeatures] = useState([]);
   const [limit_per_page, setLimitPerPage] = useState(10);
   const [page, setPage] = useState(1);
-  const [mag_type, setMagType] = useState('');
-  const MAG_TYPES = ['','md', 'ml', 'ms', 'mw', 'me', 'mi', 'mb', 'mlg']
+  const [mag_type, setMagType] = useState({
+    md: true,
+    ml: true,
+    ms: true,
+    mw: true,
+    me: true,
+    mi: true,
+    mb: true,
+    mlg: true
+  });
+  const [rangeToPages, setRangeToPages] = useState([1]);
+  const MAG_TYPES = ['md', 'ml', 'ms', 'mw', 'me', 'mi', 'mb', 'mlg']
   const URL_API = "http://localhost:3000";
 
   useEffect(() => {
-    fetch(`${URL_API}/features?per_page=${limit_per_page}&page=${page}${mag_type !== ''&&'&mag_type='+mag_type}`)
+    //only if the type is in tue
+    let mag_types_to_send = Object.keys(mag_type).filter((type) => mag_type[type])
+    fetch(`${URL_API}/features?per_page=${limit_per_page}&page=${page}${'&mag_type=' + mag_types_to_send}`)
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
@@ -26,9 +39,27 @@ export default function Home() {
       });
   }, [page, limit_per_page, mag_type]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setPage(1)
-  },[limit_per_page,mag_type])
+  }, [limit_per_page, mag_type])
+
+  useEffect(() => {
+    //i need to make a range with ten pages always, but if the total of pages is less than 10, i need to show the total of pages
+    //adding, i need to show always 10 numbers of pages in the cercany of my current page
+    if (features.pagination) {
+      if (features.pagination.total <= 5) {
+        setRangeToPages(Array.from({ length: features.pagination.total }, (_, i) => i + 1))
+      } else {
+        if (page <= 5) {
+          setRangeToPages(Array.from({ length: 6 }, (_, i) => i + 1))
+        } else if (page > features.pagination.total - 3) {
+          setRangeToPages(Array.from({ length: 6 }, (_, i) => i + 1).map((p, i) => features.pagination.total - 6 + i))
+        } else {
+          setRangeToPages(Array.from({ length: 6 }, (_, i) => i + 1).map((p, i) => page - 3 + i))
+        }
+      }
+    }
+  }, [page])
 
 
 
@@ -37,46 +68,65 @@ export default function Home() {
     setLimitPerPage(e.target.value);
   }
   return (
-    <main className="flex flex-col items-center pt-4 max-h-screen max-w-screen">
+    <main className="flex flex-col items-center pt-4 max-h-screen relative">
       <div className="flex items-center gap-x-2">
         <h1 className="text-4xl font-bold">Geo-App</h1>
         <Geo />
+        <button onClick={() => { document.querySelector('#modal').classList.remove('hidden') }} className="bg-slate-700 rounded-full p-1 w-5 h-5 items-center flex justify-center">?</button>
       </div>
       <section id="filters" className="flex flex-col items-center gap-y-4">
         <form className="flex gap-x-4 text-sm">
-          <div className="flex gap-x-2 items-center">
+          <div className="flex flex-col gap-x-2 items-center">
             <label >Magnitude Type</label>
-            <select name="mag_type" id="mag_type" className="p-0.5 rounded-xl" value={mag_type} onChange={(e) => setMagType(e.target.value)}>
-              {MAG_TYPES.map((mag_type, i) => (
-                <option value={mag_type} key={`mag_type_option_${i}`}>{mag_type == ''? 'All types' : mag_type}</option>
+            <div className="flex w-48 sm:w-60 flex-wrap justify-center gap-x-2 gap-y-1">
+              {MAG_TYPES.map((type, i) => (
+                <div key={`mag_type_option_${i}`} className="flex items-center gap-x-1">
+                  <input type="checkbox" name="mag_type" id={`mag_type_${i}`} checked={mag_type[type]}
+                    onChange={(e) => setMagType({ ...mag_type, [type]: !mag_type[type] })} />
+                  <label >{type}</label>
+                </div>
               ))}
-            </select>
+            </div>
           </div>
-          <div className="flex gap-x-2 items-center">
-            <label >Limit per page</label>
+          <div className="flex flex-col sm:flex-row gap-x-2 items-center gap-y-1 text-xs sm:text-sm">
+            <label>Limit p/page</label>
             <input className="px-2 py-0.5 w-20 rounded-xl" type="number" name="limit_per_page" id="limit_per_page" value={limit_per_page} onChange={(e) => handleLimitPerPage(e)} />
           </div>
         </form>
       </section>
-      <section id="pagination" className="overflow-x-scroll min-h-10 gap-x-2 items-center ">
-          <Arrow setPage={setPage} page={page} size={features?.pagination?.total}/>
-            {features?.pagination?.total && Array.from({ length: features?.pagination.total }, (_, i) => i + 1).map((p, i) => (
-              <button key={`page_${i}`} className={`p-2 rounded-full ${p === page && 'bg-slate-300 text-slate-800'}`} onClick={() => setPage(p)}>{p}</button>
-            ))}
-          <Arrow rotate setPage={setPage} page={page} size={features?.pagination?.total}/>
-        </section>
-      <section id="data" className="flex flex-grow  overflow-y-auto overflow-x-hidden p-2">
+      <section id="pagination" className="flex gap-x-2 items-center justify-center">
+        <DoubleArrow size={features?.pagination?.total} setPage={setPage} />
+        <Arrow setPage={setPage} page={page} size={features?.pagination?.total} />
+        <div className="flex max-w-[20rem] truncate">
+          {rangeToPages.map((p, i) => (
+            <button key={`page_${i}`} className={`p-2 rounded-full ${p === page && 'bg-slate-300 text-slate-800'}`} onClick={() => setPage(p)}>{p}</button>
+          ))}
+        </div>
+        <Arrow rotate setPage={setPage} page={page} size={features?.pagination?.total} />
+        <DoubleArrow size={features?.pagination?.total} setPage={setPage} rotate />
+      </section>
+      <section id="data" className="flex flex-grow overflow-y-auto overflow-x-hidden p-2">
         <div className={`${!loading && 'hidden'}`}><Spinner loading={loading} /></div>
         {features.data &&
           features.data.length ?
           <div className="flex flex-col gap-y-4">
-            {features.data.map(({attributes, links}, i) => (
-              <Card key={`card_${i}`} attributes={attributes} links={links} />
-              ))}
+            {features.data.map(({ id, attributes, links }, i) => (
+              <Card key={`card_${i}`} attributes={attributes} links={links} id={id} />
+            ))}
           </div>
           :
-              <NoData />
+          <NoData />
         }
+      </section>
+      <section id="modal" className="absolute flex justify-center">
+        <div className="flex flex-col bg-slate-800 p-6 text-lg rounded-xl gap-x-4 m-4 w-1/2"
+        >
+          <div className="flex justify-between pb-4">
+            <h2>About the app</h2>
+            <button onClick={() => { document.querySelector('#modal').classList.add('hidden') }} className="self-end">X</button>
+          </div>
+          <p className="">Search for information about a specific earthquake in the last 30 days, adding read about comments of the community and add your own comment.</p>
+        </div>
       </section>
     </main>
   );

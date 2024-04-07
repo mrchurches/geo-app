@@ -1,50 +1,18 @@
 class FeaturesController < ApplicationController
     def index
 
-        @features = Feature.all
-
-        # @features.count == 0 && Rake::Task['obtain_seismological_data:get_data'].invoke
-
-        # @features = Feature.all
         
-        mag_type = params[:mag_type]
+        mag_type = params[:mag_type].split(',') if params[:mag_type]
         page = params[:page]
         per_page = params[:per_page]
+        
+        @features = Feature.all
 
         if mag_type || page || per_page
           @total_pages = 0
           @features = apply_filters(@features, mag_type, page, per_page, @total_pages)
         end
-        #i need to format the response in this way 
-        #         {
-        #   "data": [
-        #     {
-        #       "id": "Integer",
-        #       "type": "feature",
-        #       "attributes": {
-        #         "external_id": "String",
-        #         "magnitude": "Decimal",
-        #         "place": "String",
-        #         "time": "String",
-        #         "tsunami": "Boolean",
-        #         "mag_type": "String",
-        #         "title": "String",
-        #         "coordinates": {
-        #           "longitude": "Decimal",
-        #           "latitude": "Decimal"
-        #         }
-        #       },
-        #       "links": {
-        #         "external_url": "String"
-        #       }
-        #     }
-        #   ],
-        #   "pagination": {
-        #     "current_page": "Integer",
-        #     "total": "Integer",
-        #     "per_page": "Integer"
-        #   }
-        # }
+
         @features = @features.map do |feature|
             {
                 id: feature.id,
