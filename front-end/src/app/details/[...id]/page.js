@@ -56,8 +56,8 @@ export default function Details() {
             {loading ?
                 <Spinner />
                 : (
-                    <div id="content" className="flex flex-col sm:flex-row ">
-                        <div id={`feature_data${id}`} className="flex flex-col gap-y-2 bg-slate-600 p-4 rounded-xl w-4/5 sm:w-auto self-center sm:h-[15rem]">
+                    <div id="content" className="flex flex-col sm:flex-row sm:gap-x-2">
+                        <div id={`feature_data${id}`} className="flex flex-col gap-y-2 bg-slate-600 p-4 rounded-xl w-4/5 sm:w-auto self-center sm:h-content">
                             <h2 className="text-xl">{data.title}</h2>
                             <h4 className="flex items-center"><PointMap />{data.place}</h4>
                             <div className="flex gap-x-4 items-center">
@@ -74,7 +74,7 @@ export default function Details() {
                             <a href={data.external_url} target="_blank" rel="noreferrer" className="text-yellow-500 pointer">External information</a>
 
                         </div>
-                        <div id={`feature_comments${id}`} className="flex flex-col bg-slate-700 w-9/12 sm:w-auto p-4 sm:my-2  rounded-b-xl sm:rounded-r-xl sm:rounded-l-none gap-y-2 justify-between self-center">
+                        <div id={`feature_comments${id}`} className="flex flex-col bg-slate-700 w-9/12  p-4 sm:my-2 sm:w-[30rem] rounded-b-xl rounded-lg gap-y-2 justify-between self-center">
                             {data.comments.length > 0 ? data.comments.map(comment => (
                                 <Comment key={comment.id} comment={comment} />
                             )) :
@@ -82,7 +82,7 @@ export default function Details() {
                                     <p className="text-slate-300">No comments</p>
                                 </div>}
                             <div className="flex flex-col gap-y-2">
-                                <textarea name="comment" id="comment" className="rounded-lg bg-slate-500 text-slate-300 p-2" value={textArea} onChange={({ target }) => setTextArea(target.value)}></textarea>
+                                <textarea name="comment" id="comment" placeholder="Write a comment here.." className="rounded-lg bg-slate-500 text-slate-300 p-2" value={textArea} onChange={({ target }) => setTextArea(target.value)}></textarea>
                                 <button className="flex self-end bg-slate-800 px-4 py-1 text-sm rounded-lg" onClick={(e) => handleClick(e)}>Submit</button>
                             </div>
                         </div>
