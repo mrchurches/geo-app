@@ -69,7 +69,6 @@ export default function Home() {
     fetch(`${URL_API}/features?per_page=${limit_per_page}&page=${page}${'&mag_type=' + mag_types_to_send}`)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
         setFeatures(data);
         setLoading(false);
       });
