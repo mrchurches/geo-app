@@ -85,13 +85,12 @@ export default function Home() {
         <Geo />
         <button onClick={() => { document.querySelector('#modal').classList.remove('hidden') }} className="bg-slate-700 rounded-full p-1 w-5 h-5 items-center flex justify-center">?</button>
       </div>
-      <div className="flex flex-col lg:flex-row overflow-y-scroll">
         <div className="flex flex-col gap-y-4 justify-center">
           <section id="filters" className="flex flex-col items-center gap-y-4">
             <form className="flex lg:flex-col lg:gap-y-4 lg:items-center gap-x-4 text-sm">
               <div className="flex flex-col gap-x-2 items-center">
                 <label >Magnitude Type</label>
-                <div className="flex w-48 sm:w-60 flex-wrap justify-center lg:gap-x-4 gap-y-1">
+                <div className="flex w-48 sm:w-auto flex-wrap flex justify-center lg:gap-x-4 gap-y-1">
                   {MAG_TYPES.map((type, i) => (
                     <div key={`mag_type_option_${i}`} className="flex items-center gap-x-1">
                       <input type="checkbox" name="mag_type" id={`mag_type_${i}`} checked={mag_type[type]}
@@ -132,7 +131,6 @@ export default function Home() {
             <NoData />
           }
         </section>
-      </div>
       <section id="modal" className="absolute flex justify-center">
         <div className="flex flex-col bg-slate-800 p-6 text-lg rounded-xl gap-x-4 m-4 w-1/2"
         >

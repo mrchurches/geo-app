@@ -14,7 +14,6 @@ class CommentsController < ApplicationController
   end
 
   def create
-    puts(params)
         @feature = Feature.find(params[:id])
         @comment = Comment.new(comment_params)
         @comment.feature = @feature
