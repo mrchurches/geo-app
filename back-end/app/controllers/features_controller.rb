@@ -58,16 +58,7 @@ class FeaturesController < ApplicationController
     end
     
     def create
-        #i need to format the time
-
-        # params[:time] = Time.at(params[:time].to_i / 1000).strftime("%Y-%m-%d %H:%M:%S")
-
         @feature = Feature.new(feature_params)
-        # if @feature.save
-        # redirect_to @feature
-        # else
-        # render 'new'
-        # end
     end
     
     def edit
