@@ -6,9 +6,8 @@ import Spinner from "@/app/components/Spinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from 'next/link'
-
+const DB_URL = process.env.NEXT_PUBLIC_DB_URL
 export default function Details() {
-    const URL_API = 'http://localhost:3000';
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({});
@@ -19,7 +18,7 @@ export default function Details() {
     }, []);
 
     const getData = () => {
-        fetch(`${URL_API}/features/${id}`)
+        fetch(`${DB_URL}/features/${id}`)
             .then(response => response.json())
             .then(data => {
                 setData(data);
@@ -30,7 +29,7 @@ export default function Details() {
 
     const handleClick = (e) => {
         e.preventDefault();
-        fetch(`${URL_API}/features/${id}/comments`, {
+        fetch(`${DB_URL}/features/${id}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

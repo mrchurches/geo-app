@@ -7,10 +7,10 @@ import NoData from "./components/NoData";
 import Geo from "./components/Geo";
 import Arrow from "./components/Arrow";
 import DoubleArrow from "./components/DoubleArrow";
-import { data } from "autoprefixer";
+const DB_URL = process.env.NEXT_PUBLIC_DB_URL
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [features, setFeatures] = useState([]);
   const [limit_per_page, setLimitPerPage] = useState(10);
   const [page, setPage] = useState(1);
@@ -26,16 +26,12 @@ export default function Home() {
   });
   const [rangeToPages, setRangeToPages] = useState([1]);
   const MAG_TYPES = ['md', 'ml', 'ms', 'mw', 'me', 'mi', 'mb', 'mlg']
-  const URL_API = "http://localhost:3000";
 
   useEffect(() => {
     get_data()
 
   }, []);
 
-  useEffect(() => {
-
-  }, [data])
   useEffect(() => {
     get_data()
   }, [page, limit_per_page, mag_type]);
@@ -65,13 +61,16 @@ export default function Home() {
   }
 
   const get_data = async () => {
+    console.log(DB_URL, '.-------------------')
+    setLoading(true);
     let mag_types_to_send = Object.keys(mag_type).filter((type) => mag_type[type])
-    fetch(`${URL_API}/features?per_page=${limit_per_page}&page=${page}${'&mag_type=' + mag_types_to_send}`)
+    fetch(`${DB_URL}/features?per_page=${limit_per_page}&page=${page}${'&mag_type=' + mag_types_to_send}`)
       .then((response) => response.json())
       .then((data) => {
         setFeatures(data);
         setLoading(false);
-      });
+      })
+      .catch((error) => console.error(error), setLoading(false));
   }
 
   const handleLimitPerPage = (e) => {
@@ -90,7 +89,7 @@ export default function Home() {
             <form className="flex lg:flex-col lg:gap-y-4 lg:items-center gap-x-4 text-sm">
               <div className="flex flex-col gap-x-2 items-center">
                 <label >Magnitude Type</label>
-                <div className="flex w-48 sm:w-auto flex-wrap flex justify-center lg:gap-x-4 gap-y-1">
+                <div className="flex w-48 sm:w-auto flex-wrap flex justify-center gap-x-2 lg:gap-x-4 gap-y-1">
                   {MAG_TYPES.map((type, i) => (
                     <div key={`mag_type_option_${i}`} className="flex items-center gap-x-1">
                       <input type="checkbox" name="mag_type" id={`mag_type_${i}`} checked={mag_type[type]}
@@ -120,8 +119,7 @@ export default function Home() {
         </div>
         <section id="data" className="flex  overflow-y-auto overflow-x-hidden p-2">
           <div className={`${!loading && 'hidden'}`}><Spinner loading={loading} /></div>
-          {features.data &&
-            features.data.length ?
+          { features.data ?
             <div className="flex flex-col gap-y-4">
               {features.data.map(({ id, attributes, links }, i) => (
                 <Card key={`card_${i}`} attributes={attributes} links={links} id={id} />

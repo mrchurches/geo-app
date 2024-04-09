@@ -14,6 +14,9 @@ This is an app to consume information of seismological events from the USGS API.
 6. Run `rake obtain_seismological_data:get_data` to get the data from the USGS API.
 8. Go to front-end folder.
 9. Run `npm i` to install all dependencies.
+10. Create a .env file with the following content:
+    ```NEXT_PUBLIC_DB_URL=http://localhost:YOUR-DB-PORT```
+    or use the default ```http://localhost:3000```
 
 ## Usage
 To run the project, execute the following command:
